@@ -3,7 +3,6 @@ import cv2
 from PIL import Image
 import imagehash
 import pandas as pd
-from utils.log_utils import logger
 # from config import settings
 
 def compare_hashes(hash1, hash2):
@@ -14,7 +13,7 @@ def compare_consecutive_frames(video_path, csv_folder_path, threshold=20, debug_
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         print("Error: Could not open video.")
-        logger.error("Error: Could not open video.")
+        print("Error: Could not open video.")
         return
 
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -25,7 +24,7 @@ def compare_consecutive_frames(video_path, csv_folder_path, threshold=20, debug_
         ret, frame = cap.read()
         if not ret:
             print(f"Error: Could not read frame {i}")
-            logger.error(f"Error: Could not read frame {i}")
+            print(f"Error: Could not read frame {i}")
             break
         
         current_frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -37,7 +36,7 @@ def compare_consecutive_frames(video_path, csv_folder_path, threshold=20, debug_
             #     print(f"Comparing frames {i-1} and {i}: Similarity score = {similarity} -> Similar")
             # else:
                 print(f"Comparing frames {i-1} and {i}: Similarity score = {similarity} -> Not Similar")
-                logger.info(f"Comparing frames {i-1} and {i}: Similarity score = {similarity} -> Not Similar")
+                print(f"Comparing frames {i-1} and {i}: Similarity score = {similarity} -> Not Similar")
         
             results.append({
                 'Frame Pair': f"{i-1}-{i}",
@@ -53,13 +52,13 @@ def compare_consecutive_frames(video_path, csv_folder_path, threshold=20, debug_
 
     # Save DataFrame to CSV
     # csv_folder_path = os.path.join(settings.DEBUG_PATH, "camera_view")
-    csv_folder_path = os.path.join(debug_path, "camera_view")
+    # csv_folder_path = os.path.join(debug_path, "camera_view")
     if not os.path.exists(csv_folder_path):
         os.makedirs(csv_folder_path)
     csv_filename = os.path.join(csv_folder_path, 'frame_similarity_scores.csv')
     df.to_csv(csv_filename, index=False)
     print(f"Similarity scores saved to {csv_filename}")
-    logger.info(f"Similarity scores saved to {csv_filename}")
+    print(f"Similarity scores saved to {csv_filename}")
     return csv_filename, frame_count
 
 
@@ -116,7 +115,7 @@ def process_similarity_scores(filepath, output_csv_path, threshold=20):
     results_df = pd.DataFrame(results)
     results_df.to_csv(output_csv_path, index=False)
     print(f"Results saved to {output_csv_path}")
-    logger.info(f"Results saved to {output_csv_path}")
+    print(f"Results saved to {output_csv_path}")
 
 def drop_duplicate_frames(output_csv_path= None, video_path= None):
     if output_csv_path is None:
@@ -147,7 +146,7 @@ def drop_duplicate_frames(output_csv_path= None, video_path= None):
         
         if not ret:
             print(f"Failed to read frame {frame_count}")
-            logger.error(f"Failed to read frame {frame_count}")
+            print(f"Failed to read frame {frame_count}")
             break
         
         # If the current frame matches one of the start numbers
@@ -199,7 +198,7 @@ def drop_duplicate_frames(output_csv_path= None, video_path= None):
     # Reset index after dropping rows
     # df_new = df_new.reset_index(drop=True)
     print(f"Drop dulicates done and saved to: {output_csv_path}")
-    logger.info(f"Drop duplicates done and saved to: {output_csv_path}")
+    print(f"Drop duplicates done and saved to: {output_csv_path}")
 
 
 def frame_change_compatibility(output_csv_path=None, frame_count=1098):
